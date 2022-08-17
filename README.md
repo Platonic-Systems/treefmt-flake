@@ -4,6 +4,8 @@ A [`flake-parts`](https://github.com/hercules-ci/flake-parts) module to work wit
 
 ## Usage
 
+See [this PR](https://github.com/srid/haskell-template/pull/36) for a complete example.
+
 ```nix
   outputs = { self, flake-parts, nixpkgs, treefmt-flake, ... }:
     flake-parts.lib.mkFlake { inherit self; } {
