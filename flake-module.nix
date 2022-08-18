@@ -34,6 +34,15 @@ in
   };
   config = {
     perSystem = { config, self', inputs', pkgs, ... }: {
+      apps.format = {
+        type = "app";
+        program = pkgs.writeShellApplication {
+          name = "format";
+          runtimeInputs = config.treefmt.buildInputs; 
+          text = "treefmt";
+        };
+      };
+
       checks.treefmt = pkgs.runCommandLocal "treefmt-check"
         {
           buildInputs = [ pkgs.git ] ++ config.treefmt.buildInputs;
