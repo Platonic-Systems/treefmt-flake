@@ -38,3 +38,5 @@ See [this PR](https://github.com/srid/haskell-template/pull/36) for a complete e
 ```
 
 This adds a `.#checks.<system>.treefmt` flake output that checks that the project tree is already autoformatted.
+
+It also adds a `.#apps.<system>.format` output that can can be used to format your project using `nix run .#format`.
