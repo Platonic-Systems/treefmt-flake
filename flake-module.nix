@@ -20,7 +20,9 @@ in
             See https://github.com/numtide/treefmt-nix for options available.
           '';
           type = types.submodule {
-            inherit (inputs.treefmt-nix.lib.evalModule pkgs { projectRootFile = "flake.nix"; }) options;
+            options = 
+              let mod = inputs.treefmt-nix.lib.evalModule pkgs { projectRootFile = "flake.nix"; };
+              in builtins.removeAttrs options ["_module"];;
           };
         };
       });
