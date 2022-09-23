@@ -14,20 +14,13 @@ in
     perSystem = mkPerSystemOption
       ({ config, self', inputs', pkgs, system, ... }: {
         options.treefmt = mkOption {
-          description = "treefmt: source code tree autoformatter";
+          description = ''
+            Configuration for treefmt.
+
+            See https://github.com/numtide/treefmt-nix for options available.
+          '';
           type = types.submodule {
-            options = {
-              formatters = mkOption {
-                type = types.attrsOf (types.nullOr types.package);
-                default = { };
-                description = ''Formatter packages in use by treefmt.toml'';
-              };
-              # Library option (not to be set by the user)
-              buildInputs = mkOption {
-                type = types.listOf types.package;
-                default = [ pkgs.treefmt ] ++ lib.attrValues config.treefmt.formatters;
-              };
-            };
+            inherit (import inputs'.treefmt-nix.lib.mod) options;
           };
         };
       });
@@ -36,16 +29,12 @@ in
     perSystem = { config, self', inputs', pkgs, ... }: {
       apps.format = {
         type = "app";
-        program = pkgs.writeShellApplication {
-          name = "format";
-          runtimeInputs = config.treefmt.buildInputs; 
-          text = "treefmt";
-        };
+        program = config.treefmt.build.wrapper;
       };
 
       checks.treefmt = pkgs.runCommandLocal "treefmt-check"
         {
-          buildInputs = [ pkgs.git ] ++ config.treefmt.buildInputs;
+          buildInputs = [ pkgs.git ] ++ config.treefmt.build.wrapper;
         }
         ''
           set -e
