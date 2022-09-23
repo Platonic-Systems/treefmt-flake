@@ -20,11 +20,13 @@ in
             See https://github.com/numtide/treefmt-nix for options available.
           '';
           type = types.submodule {
-            options = 
+            options =
               let mod = inputs.treefmt-nix.lib.evalModule pkgs { projectRootFile = "flake.nix"; };
-              in builtins.removeAttrs mod.options ["_module" 
-                # dont know why this is an option
-                "build"];
+              in builtins.removeAttrs mod.options [
+                "_module"
+                # TODO: Why is this an option if the user can't set it?
+                "build"
+              ];
           };
         };
       });
