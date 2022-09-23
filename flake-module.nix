@@ -22,7 +22,9 @@ in
           type = types.submodule {
             options = 
               let mod = inputs.treefmt-nix.lib.evalModule pkgs { projectRootFile = "flake.nix"; };
-              in builtins.removeAttrs mod.options ["_module"];
+              in builtins.removeAttrs mod.options ["_module" 
+                # dont know why this is an option
+                "build"];
           };
         };
       });
