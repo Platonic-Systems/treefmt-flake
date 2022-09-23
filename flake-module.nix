@@ -1,7 +1,7 @@
 # A flake-parts module for using treefmt (provides a check, mainly)
 #
 # NOTE: This module may be improved using https://github.com/numtide/treefmt/pull/169
-{ self, lib, flake-parts-lib, ... }:
+{ self, inputs, lib, flake-parts-lib, ... }:
 let
   inherit (flake-parts-lib)
     mkPerSystemOption;
@@ -20,7 +20,7 @@ in
             See https://github.com/numtide/treefmt-nix for options available.
           '';
           type = types.submodule {
-            inherit (pkgs.callPackage inputs'.treefmt-nix.lib.module-options {}) options;
+            inherit (pkgs.callPackage inputs.treefmt-nix.lib.module-options {}) options;
           };
         };
       });
