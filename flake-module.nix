@@ -20,7 +20,7 @@ in
             See https://github.com/numtide/treefmt-nix for options available.
           '';
           type = types.submodule {
-            inherit (import inputs'.treefmt-nix.lib.mod) options;
+            inherit (pkgs.callPackage inputs'.treefmt-nix.lib.module-options {}) options;
           };
         };
       });
