@@ -1,7 +1,7 @@
 # A flake-parts module for using treefmt (provides a check, mainly)
 #
 # NOTE: This module may be improved using https://github.com/numtide/treefmt/pull/169
-{ self, lib, flake-parts-lib, ... }:
+{ self, inputs, lib, flake-parts-lib, ... }:
 let
   inherit (flake-parts-lib)
     mkPerSystemOption;
@@ -14,20 +14,19 @@ in
     perSystem = mkPerSystemOption
       ({ config, self', inputs', pkgs, system, ... }: {
         options.treefmt = mkOption {
-          description = "treefmt: source code tree autoformatter";
+          description = ''
+            Configuration for treefmt.
+
+            See https://github.com/numtide/treefmt-nix for options available.
+          '';
           type = types.submodule {
-            options = {
-              formatters = mkOption {
-                type = types.attrsOf (types.nullOr types.package);
-                default = { };
-                description = ''Formatter packages in use by treefmt.toml'';
-              };
-              # Library option (not to be set by the user)
-              buildInputs = mkOption {
-                type = types.listOf types.package;
-                default = [ pkgs.treefmt ] ++ lib.attrValues config.treefmt.formatters;
-              };
-            };
+            options =
+              let mod = inputs.treefmt-nix.lib.evalModule pkgs { projectRootFile = "flake.nix"; };
+              in builtins.removeAttrs mod.options [
+                "_module"
+                # TODO: Why is this an option if the user can't set it?
+                "build"
+              ];
           };
         };
       });
@@ -36,16 +35,12 @@ in
     perSystem = { config, self', inputs', pkgs, ... }: {
       apps.format = {
         type = "app";
-        program = pkgs.writeShellApplication {
-          name = "format";
-          runtimeInputs = config.treefmt.buildInputs; 
-          text = "treefmt";
-        };
+        program = config.treefmt.build.wrapper;
       };
 
       checks.treefmt = pkgs.runCommandLocal "treefmt-check"
         {
-          buildInputs = [ pkgs.git ] ++ config.treefmt.buildInputs;
+          buildInputs = [ pkgs.git ] ++ config.treefmt.build.wrapper;
         }
         ''
           set -e
